@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Quiz de Segurança Cibernética</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #007BFF, #cce0ff);
+    color: #003366;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+  }
+
+  .container {
+    width: 90%;
+    max-width: 700px;
+  }
+
+  .quiz-box, .start-box, .end-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    margin: auto;
+  }
+
+  .question {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+  }
+
+  .option {
+    display: block;
+    background: #99c2ff;
+    border: none;
+    border-radius: 40px;
+    padding: 15px;
+    margin: 15px 0;
+    cursor: pointer;
+    font-size: 1.3em;
+    color: #003366;
+    transition: background 0.3s;
+  }
+
+  .option:hover {
+    background: #6699ff;
+  }
+
+  .option:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+
+  .feedback {
+    font-size: 1.5em;
+    margin-top: 20px;
+    font-weight: bold;
+  }
+
+  .next-btn, .start-btn {
+    margin-top: 25px;
+    padding: 15px 30px;
+    font-size: 1.4em;
+    background-color: #0055cc;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+  }
+
+  .next-btn:hover, .start-btn:hover {
+    background-color: #0044aa;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="start-box" id="startScreen">
+      <h1>Bem-vindo ao Quiz de Segurança Cibernética</h1>
+      <p>Aprenda e teste seus conhecimentos sobre segurança na internet!</p>
+      <button class="start-btn" onclick="iniciarQuiz()">Começar Quiz</button>
+    </div>
+
+    <div class="quiz-box" id="quiz-container" style="display:none;">
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextButton" style="display:none;" onclick="proximaPergunta()">Próxima</button>
+    </div>
+
+    <div class="end-box" id="endScreen" style="display:none;">
+      <h2>Parabéns por concluir o quiz!</h2>
+      <p id="finalMessage"></p>
+      <div id="reward"></div>
+      <p style="margin-top:30px; font-size:0.9em; color:#666;">Créditos: Pelé Redondo e Cava Uma Falta</p>
+    </div>
+
+  </div>
+
+<script>
+  const quiz = [
+    {
+      pergunta: "É seguro compartilhar sua senha com alguém de confiança?",
+      opcoes: ["Sim", "Não"],
+      correta: 1,
+    },
+    {
+      pergunta: "Se você receber um e-mail pedindo seus dados bancários, o que deve fazer?",
+      opcoes: ["Responder com os dados", "Ignorar e apagar o e-mail"],
+      correta: 1,
+    },
+    {
+      pergunta: "Você deve usar a mesma senha em todos os sites?",
+      opcoes: ["Sim, é mais fácil lembrar", "Não, é mais seguro ter senhas diferentes"],
+      correta: 1,
+    },
+    {
+      pergunta: "Um site pede para você clicar em um link estranho. O que fazer?",
+      opcoes: ["Clicar para ver o que é", "Não clicar e fechar o site"],
+      correta: 1,
+    },
+    {
+      pergunta: "Você recebeu um arquivo chamado 'extrato_banco.exe' por e-mail. O que fazer?",
+      opcoes: ["Abrir para ver o conteúdo", "Não abrir, pode ser vírus"],
+      correta: 1,
+    },
+    {
+      pergunta: "É seguro abrir arquivos bancários apenas se vierem de onde?",
+      opcoes: ["Fontes confiáveis como o site do banco", "Qualquer e-mail que pareça oficial"],
+      correta: 0,
+    },
+    {
+      pergunta: "Como proteger seu celular de vírus e golpes?",
+      opcoes: [
+        "Instalando apps de fontes seguras e mantendo o sistema atualizado",
+        "Baixando qualquer app que aparece na internet",
+      ],
+      correta: 0,
+    },
+    {
+      pergunta: "Qual é a melhor maneira de criar uma senha forte?",
+      opcoes: ["Usar seu nome e data de nascimento", "Misturar letras, números e símbolos"],
+      correta: 1,
+    },
+  ];
+
+  let indexAtual = 0;
+  let acertos = 0;
+  let falaAtual = null;
+
+  function falar(texto) {
+    if ('speechSynthesis' in window) {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      falaAtual = new SpeechSynthesisUtterance(texto);
+      falaAtual.lang = 'pt-BR';
+      window.speechSynthesis.speak(falaAtual);
+    }
+  }
+
+  function iniciarQuiz() {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    indexAtual = 0;
+    acertos = 0;
+    mostrarPergunta();
+  }
+
+  function mostrarPergunta() {
+    const q = quiz[indexAtual];
+    document.getElementById('question').textContent = q.pergunta;
+
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = '';
+
+    q.opcoes.forEach((opcao, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = opcao;
+      btn.className = 'option';
+      btn.onclick = () => verificarResposta(i);
+      optionsDiv.appendChild(btn);
+    });
+
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('nextButton').style.display = 'none';
+
+    // Falar pergunta e opções
+    let textoFalar = q.pergunta + '. ';
+    q.opcoes.forEach((opcao, i) => {
+      textoFalar += `Opção ${i+1}: ${opcao}. `;
+    });
+    falar(textoFalar);
+  }
+
+  function verificarResposta(resposta) {
+    const q = quiz[indexAtual];
+    const feedback = document.getElementById('feedback');
+
+    // Desabilitar todas opções após responder
+    const botoes = document.querySelectorAll('.option');
+    botoes.forEach(btn => btn.disabled = true);
+
+    if (resposta === q.correta) {
+      feedback.textContent = "✅ Correto! Muito bem!";
+      feedback.style.color = "green";
+      acertos++;
+      falar("Correto! Muito bem!");
+    } else {
+      feedback.textContent = `❌ Incorreto. A resposta certa era: ${q.opcoes[q.correta]}`;
+      feedback.style.color = "red";
+      falar(`Incorreto. A resposta certa era: ${q.opcoes[q.correta]}`);
+    }
+
+    document.getElementById('nextButton').style.display = 'inline-block';
+  }
+
+  function proximaPergunta() {
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
+    indexAtual++;
+    if (indexAtual < quiz.length) {
+      mostrarPergunta();
+    } else {
+      mostrarResultado();
+    }
+  }
+
+  function gerarNumerosMegaSena() {
+    const numeros = new Set();
+    while (numeros.size < 6) {
+      numeros.add(Math.floor(Math.random() * 60) + 1);
+    }
+    return Array.from(numeros).sort((a,b) => a - b).join(", ");
+  }
+
+  function mostrarResultado() {
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('endScreen').style.display = 'block';
+
+    const msg = document.getElementById('finalMessage');
+    const recompensaDiv = document.getElementById('reward');
+
+    if (acertos === quiz.length) {
+      const numeros = gerarNumerosMegaSena();
+      msg.textContent = `Você acertou todas! Excelente! Aqui está sua recompensa para jogar na Mega-Sena:`;
+      recompensaDiv.innerHTML = `<strong>Números da sorte:</strong> ${numeros}`;
+      falar(`Parabéns! Você acertou todas as perguntas. Seus números da sorte para a Mega-Sena são: ${numeros}`);
+    } else {
+      msg.textContent = `Você acertou ${acertos} de ${quiz.length} perguntas. Continue praticando!`;
+      recompensaDiv.innerHTML = '';
+      falar(`Você acertou ${acertos} de ${quiz.length} perguntas. Continue praticando!`);
+    }
+  }
+</script>
+</body>
+</html>
