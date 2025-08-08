@@ -1,0 +1,439 @@
+Html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Segurança Cibernética</title>
+  <link rel="stylesheet" href="css/sty.css">
+</head>
+<body>
+  <header>
+    <div class="top-bar">
+      <div class="buttons-top">
+        <button class="top-btn" aria-label="Dashboard">Dashboard</button>
+        <button class="top-btn" aria-label="Leaderboard">Leaderboard</button>
+        <button class="top-btn" aria-label="Quiz Analytics">Quiz Analytics</button>
+        <button id="restartQuiz" aria-label="Reiniciar quiz" title="Restart Quiz">⟲</button>
+      </div>
+      <div class="score-info">
+        <span>Score: <span id="scoreValue">0 pts</span></span>
+        <progress id="progressBar" max="5" value="0" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"></progress>
+        <span>Total Questions: <span id="totalQuestions">5</span></span>
+        <span>Correct Answers: <span id="correctAnswers">0</span></span>
+      </div>
+    </div>
+  </header>
+
+  <main id="quizArea" role="main" aria-live="polite">
+    <section id="questionBox">
+      <h2 id="questionTitle">Question 1</h2>
+      <p id="questionText"></p>
+      <div id="answersContainer"></div>
+      <button id="ttsBtn" aria-label="Ouvir a pergunta" title="Ouvir a pergunta">🔊 Ouvir</button>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+.
+.
+.
+.
+.
+css
+/* Fundo degradê laranja para azul */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(90deg, #ff9800 0%, #2196f3 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 10px 20px;
+  background: rgba(0,0,0,0.15);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.buttons-top {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.top-btn {
+  background-color: #0a74da;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 24px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  user-select: none;
+}
+
+.top-btn:hover,
+.top-btn:focus {
+  background-color: #095bb5;
+  outline: none;
+}
+
+#restartQuiz {
+  background-color: #28a745;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+#restartQuiz:hover,
+#restartQuiz:focus {
+  background-color: #1e7e34;
+  outline: none;
+}
+
+.score-info {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  margin-top: 8px;
+}
+
+progress {
+  width: 120px;
+  height: 15px;
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #ddd;
+  overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+  background-color: #ddd;
+  border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+  background-color: #4caf50;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+progress::-moz-progress-bar {
+  background-color: #4caf50;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+main#quizArea {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+#questionBox {
+  background-color: #0a47a1;
+  border-radius: 24px;
+  padding: 30px 40px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  text-align: center;
+  user-select: none;
+}
+
+#questionTitle {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+#questionText {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+  line-height: 1.4;
+  color: #d0e7ff;
+}
+
+#answersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.answer-btn {
+  background-color: #4caf50;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: left;
+  user-select: none;
+  position: relative;
+}
+
+.answer-btn:hover,
+.answer-btn:focus {
+  background-color: #388e3c;
+  outline: none;
+}
+
+.answer-btn.correct {
+  background-color: #2ecc71;
+  box-shadow: 0 0 15px #2ecc71aa;
+}
+
+.answer-btn.incorrect {
+  background-color: #e74c3c;
+  box-shadow: 0 0 15px #e74c3caa;
+}
+
+.answer-btn::before {
+  content: attr(data-num);
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255 255 255 / 0.25);
+  margin-right: 15px;
+  text-align: center;
+  font-weight: 700;
+  user-select: none;
+}
+
+#ttsBtn {
+  margin-top: 25px;
+  background-color: #007bff;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#ttsBtn:hover,
+#ttsBtn:focus {
+  background-color: #0056b3;
+  outline: none;
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+  #questionBox {
+    padding: 20px;
+  }
+
+  #questionTitle {
+    font-size: 1.5rem;
+  }
+
+  #questionText {
+    font-size: 1rem;
+  }
+
+  .answer-btn {
+    font-size: 1rem;
+    padding: 12px 15px;
+  }
+}
+.
+.
+.
+.
+.
+script
+const questions = [
+  {
+    question: "Qual é a maneira mais segura de criar uma senha?",
+    answers: [
+      "Usar seu nome e data de nascimento",
+      "Combinar letras, números e símbolos",
+      "Apenas números",
+      "Senha '123456'"
+    ],
+    correctIndex: 1
+  },
+  {
+    question: "Se receber um e-mail estranho pedindo seus dados, o que deve fazer?",
+    answers: [
+      "Responder imediatamente",
+      "Excluir e não clicar em links",
+      "Enviar seus dados para confirmar",
+      "Encaminhar para amigos"
+    ],
+    correctIndex: 1
+  },
+  {
+    question: "O que significa 'phishing'?",
+    answers: [
+      "Pescar peixes",
+      "Tentativa de roubar informações pessoais",
+      "Um vírus de computador",
+      "Um programa de segurança"
+    ],
+    correctIndex: 1
+  },
+  {
+    question: "Por que é importante atualizar seus aplicativos?",
+    answers: [
+      "Para mudar as cores",
+      "Para corrigir falhas de segurança",
+      "Para gastar internet",
+      "Para aumentar a velocidade do aparelho"
+    ],
+    correctIndex: 1
+  },
+  {
+    question: "Qual é o sinal de um site seguro?",
+    answers: [
+      "Começa com http://",
+      "Tem um cadeado na barra de endereço",
+      "Tem muitas propagandas",
+      "Tem muitos pop-ups"
+    ],
+    correctIndex: 1
+  }
+];
+
+const questionTitle = document.getElementById("questionTitle");
+const questionText = document.getElementById("questionText");
+const answersContainer = document.getElementById("answersContainer");
+const ttsBtn = document.getElementById("ttsBtn");
+const scoreValue = document.getElementById("scoreValue");
+const progressBar = document.getElementById("progressBar");
+const totalQuestionsSpan = document.getElementById("totalQuestions");
+const correctAnswersSpan = document.getElementById("correctAnswers");
+const restartBtn = document.getElementById("restartQuiz");
+
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuestion() {
+  const q = questions[currentQuestion];
+  questionTitle.textContent = `Question ${currentQuestion + 1}`;
+  questionText.textContent = q.question;
+
+  answersContainer.innerHTML = "";
+  q.answers.forEach((answer, i) => {
+    const btn = document.createElement("button");
+    btn.className = "answer-btn";
+    btn.textContent = answer;
+    btn.setAttribute("data-num", i + 1);
+    btn.onclick = () => selectAnswer(i);
+    btn.setAttribute("tabindex", "0");
+    answersContainer.appendChild(btn);
+  });
+
+  // Atualizar barra de progresso
+  progressBar.value = currentQuestion;
+  progressBar.setAttribute("aria-valuenow", currentQuestion);
+}
+
+function selectAnswer(index) {
+  const q = questions[currentQuestion];
+  const buttons = answersContainer.querySelectorAll("button");
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correctIndex) {
+      btn.classList.add("correct");
+    }
+    if (i === index && i !== q.correctIndex) {
+      btn.classList.add("incorrect");
+    }
+  });
+
+  if (index === q.correctIndex) {
+    score++;
+    speak("Resposta correta");
+  } else {
+    speak("Resposta incorreta");
+  }
+
+  currentQuestion++;
+  scoreValue.textContent = `${score} pts`;
+  totalQuestionsSpan.textContent = questions.length;
+  correctAnswersSpan.textContent = score;
+  progressBar.value = currentQuestion;
+  progressBar.setAttribute("aria-valuenow", currentQuestion);
+
+  if (currentQuestion < questions.length) {
+    setTimeout(() => {
+      loadQuestion();
+    }, 1200);
+  } else {
+    setTimeout(() => {
+      showResults();
+    }, 1200);
+  }
+}
+
+function showResults() {
+  questionTitle.textContent = "Fim do Quiz!";
+  questionText.textContent = `Você acertou ${score} de ${questions.length} perguntas. Parabéns!`;
+  answersContainer.innerHTML = "";
+  ttsBtn.style.display = "none";
+}
+
+restartBtn.addEventListener("click", () => {
+  currentQuestion = 0;
+  score = 0;
+  ttsBtn.style.display = "inline-block";
+  scoreValue.textContent = "0 pts";
+  correctAnswersSpan.textContent = "0";
+  progressBar.value = 0;
+  progressBar.setAttribute("aria-valuenow", 0);
+  loadQuestion();
+  speak("Quiz reiniciado");
+});
+
+ttsBtn.addEventListener("click", () => {
+  if (currentQuestion < questions.length) {
+    speak(questions[currentQuestion].question);
+  }
+});
+
+function speak(text) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
+}
+
+loadQuestion();
